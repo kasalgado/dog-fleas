@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% block title %}Dogs{% endblock %}
 
 {% block  body %}
     <h1>Dogs</h1>
@@ -30,7 +31,7 @@
                     </td>
                     <td>
                         {% if dog.fleas is not empty %}
-                            <a href="{{ path('app_dog_wash', {'id': dog.id}) }}">Wash</a>
+                            <a href="{{ path('app_dog_wash', {'id': dog.id}) }}" class="btn btn-success">Wash</a>
                         {% endif %}
                     </td>
                 </tr>

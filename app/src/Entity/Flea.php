@@ -9,6 +9,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\Table(name="flea")
  * @ORM\Entity(repositoryClass=FleaRepository::class)
  */
 class Flea
