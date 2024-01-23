@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # Symfony Application
+  demo_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo_web
+    volumes:
+      - ./app:/var/www/html/
+      - ./apache-config.conf:/etc/apache2/sites-available/000-default.conf:ro
+    ports:
+      - "8000:80"
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+      - DATABASE_URL=mysql://demo_user:demo@demo_db:3306/demo
+    depends_on:
+      - demo_db
+
+  demo_db:
+    image: mysql:8.0
+    container_name: demo_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=demo
+      - MYSQL_DATABASE=demo
+      - MYSQL_USER=demo_user
+      - MYSQL_PASSWORD=demo
+    ports:
+      - "3307:3306"
+

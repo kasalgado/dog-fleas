@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block  body %}
+    <main class="main clearfix">
+        <h1>{{ title }}</h1>
+        <h2>{{ subtitle }}</h2>
+        <h3>{{ 'dog_list'|trans({}, 'system') }}</h3>
+        <div>
+            <table>
+                <th>id</th>
+                <th>age</th>
+                <th>Name</th>
+                <th>Creation Date</th>
+                {% for key, dog in dog_list %}
+                    <tr>
+                        <td>{{ dog.id }}</td>
+                        <td>{{ dog.age }}</td>
+                        <td>{{ dog.name }}</td>
+                        <td>{{ dog.timestamp|date('d.m.Y') }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </main>
+{% endblock %}
