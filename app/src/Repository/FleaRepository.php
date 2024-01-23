@@ -1,78 +1,54 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 00010230
- * Date: 24.10.2019
- * Time: 12:06
- */
+
+declare(strict_types=1);
 
 namespace App\Repository;
 
 use App\Entity\Flea;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-
-class FleaRepository
+/**
+ * @method Flea|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Flea|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Flea[]    findAll()
+ * @method Flea[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ */
+class FleaRepository extends ServiceEntityRepository
 {
     /**
-     * @var \Doctrine\Common\Persistence\ObjectRepository
+     * @param ManagerRegistry $registry
      */
-    private $repository;
-    /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     *
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $entityManager->getRepository(Flea::class);
-        $this->em = $entityManager;
+        parent::__construct($registry, Flea::class);
     }
 
     /**
-     * @return object[]
+     * @return array
      */
-    public function getAll()
+    public function findHomed(): array
     {
-        return $this->repository->findAll();
+        return $this->createQueryBuilder('f')
+            ->where('f.dog IS NOT NULL')
+            ->getQuery()
+            ->getResult();
     }
 
-
     /**
-     * @param $id
-     * @return object|null
-     */
-    public function getById($id)
-    {
-        return $this->repository->find($id);
-    }
-
-
-    /**
-     * @param $dog
      * @return int
      */
-    public function update($dog)
+    public function findOneDogIdWithLowPopulation(): int
     {
-        $this->em->persist($dog);
-        $this->em->flush();
-        return 1;
+        $query = $this->createQueryBuilder('f')
+            ->innerJoin('f.dog', 'd')
+            ->select(['d.id', 'count(f.dog) AS total'])
+            ->groupBy('f.dog')
+            ->orderBy('total', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getResult();
+
+        return $query[0]['id'];
     }
-
-
-    /**
-     * @param $dog
-     * @return int
-     */
-    public function delete($dog)
-    {
-        $this->em->remove($dog);
-        $this->em->flush();
-        return 1;
-    }
-
 }

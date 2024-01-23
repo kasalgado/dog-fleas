@@ -1,24 +1,31 @@
 <?php
 
+declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Flea;
+use App\Service\FleaService;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 class FleaFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    private FleaService $fleaService;
+
+    /**
+     * @param FleaService $fleaService
+     */
+    public function __construct(FleaService $fleaService)
     {
-        // Create 20 fleas with random data
-        for ($i = 0; $i < 20; $i++) {
-            $flea = new Flea();
-            // Timestamp will be set automatically in the constructor
+        $this->fleaService = $fleaService;
+    }
 
-            $manager->persist($flea);
-        }
-
-        $manager->flush();
+    /**
+     * @param ObjectManager $manager
+     * @return void
+     */
+    public function load(ObjectManager $manager): void
+    {
+        $this->fleaService->createNewFleas(10);
     }
 }

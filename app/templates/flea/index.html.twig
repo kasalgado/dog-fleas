@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block  body %}
+    <h1>Fleas</h1>
+
+    {% for message in app.flashes('notice') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">{{ message }}</div>
+    {% endfor %}
+    <br/>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for flea in fleas %}
+                <tr>
+                    <td>{{ flea.id }}</td>
+                    <td>
+                        <a
+                                id="{{ flea.id }}"
+                                href="{{ path('app_flea_bite', {'id': flea.id}) }}"
+                                class="btn btn-warning"
+                        >Bite</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br/>
+    <a href="{{ path('app_flea_create') }}" class="btn btn-danger">New infestation!</a>
+{% endblock %}

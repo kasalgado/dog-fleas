@@ -8,9 +8,9 @@ use Doctrine\Persistence\ObjectManager;
 
 class DogFixtures extends Fixture
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $dog = new Dog();
             $dog->setAge(mt_rand(1, 10));
             $dog->setName('Dog' . $i);

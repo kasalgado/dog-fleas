@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block  body %}
+    <h1>Dogs</h1>
+
+    {% for message in app.flashes('notice') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">{{ message }}</div>
+    {% endfor %}
+    <br/>
+
+    <main>
+        <table class="table">
+            <th>ID</th>
+            <th>Age</th>
+            <th>Name</th>
+            <th>Creation Date</th>
+            <th>Fleas</th>
+            <th>Action</th>
+
+            {% for key, dog in dogs %}
+                <tr>
+                    <td>{{ dog.id }}</td>
+                    <td>{{ dog.age }}</td>
+                    <td>{{ dog.name }}</td>
+                    <td>{{ dog.timestamp|date('d.m.Y') }}</td>
+                    <td>
+                        {% for flea in dog.fleas %}
+                            {{ flea.id }}&nbsp;
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if dog.fleas is not empty %}
+                            <a href="{{ path('app_dog_wash', {'id': dog.id}) }}">Wash</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </main>
+{% endblock %}
