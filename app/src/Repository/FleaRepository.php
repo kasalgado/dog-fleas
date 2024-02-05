@@ -6,6 +6,8 @@ namespace App\Repository;
 
 use App\Entity\Flea;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -27,16 +29,21 @@ class FleaRepository extends ServiceEntityRepository
     /**
      * @return array
      */
-    public function findHomed(): array
+    public function findPopulatedDogIds(): array
     {
         return $this->createQueryBuilder('f')
+            ->innerJoin('f.dog', 'd')
+            ->select('d.id')
             ->where('f.dog IS NOT NULL')
+            ->groupBy('d.id')
             ->getQuery()
-            ->getResult();
+            ->getSingleColumnResult();
     }
 
     /**
      * @return int
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function findOneDogIdWithLowPopulation(): int
     {
@@ -47,8 +54,8 @@ class FleaRepository extends ServiceEntityRepository
             ->orderBy('total', 'ASC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult();
+            ->getSingleResult();
 
-        return $query[0]['id'];
+        return $query['id'];
     }
 }

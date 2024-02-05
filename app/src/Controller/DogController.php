@@ -40,7 +40,7 @@ class DogController extends AbstractController
         }
 
         $dogService->removeFleasFromDogAndUpdateFlea($dog);
-        $this->addFlash('notice', 'Dog ' . $dog->getId() . 'was washed!');
+        $this->addFlash('notice', 'Dog ' . $dog->getId() . ' was washed!');
 
         return $this->redirectToRoute('app_dog');
     }

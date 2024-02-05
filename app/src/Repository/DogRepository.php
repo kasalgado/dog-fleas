@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Dog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -27,17 +28,16 @@ class DogRepository extends ServiceEntityRepository
     /**
      * @param array $ids
      * @return Dog|null
+     * @throws NonUniqueResultException
      */
-    public function findOneAvailable(array $ids): Dog|null
+    public function findOneAvailableOrNull(array $ids): Dog|null
     {
-        $query = $this->createQueryBuilder('d')
+        return $this->createQueryBuilder('d')
             ->where('d.id NOT IN(:ids)')
             ->setParameter('ids', $ids)
             ->orderBy('d.id', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getResult();
-
-        return !empty($query) ? $query[0] : null;
+            ->getOneOrNullResult();
     }
 }

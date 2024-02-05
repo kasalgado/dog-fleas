@@ -8,6 +8,8 @@ use App\Entity\Dog;
 use App\Repository\DogRepository;
 use App\Repository\FleaRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class DogService
@@ -41,23 +43,16 @@ class DogService
 
     /**
      * @return Dog
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function getAvailableDog(): Dog
     {
         $dogIds = $this->fleaService->getPopulatedDogIds();
 
-        if (empty($dogIds)) {
-            $dog = $this->registry->getRepository(Dog::class)->findOneBy([]);
-        } else {
-            $dog = $this->dogRepository->findOneAvailable($dogIds);
-
-            if ($dog === null) {
-                $lowPopulatedDogId = $this->fleaRepository->findOneDogIdWithLowPopulation();
-                $dog = $this->registry->getRepository(Dog::class)->find($lowPopulatedDogId);
-            }
-        }
-
-        return $dog;
+        return empty($dogIds)
+            ? $this->registry->getRepository(Dog::class)->findOneBy([])
+            : $this->findDogToPopulate($dogIds);
     }
 
     /**
@@ -74,5 +69,21 @@ class DogService
 
         $this->entityManager->persist($dog);
         $this->entityManager->flush();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    private function findDogToPopulate(array $dogIds): Dog
+    {
+        $dog = $this->dogRepository->findOneAvailableOrNull($dogIds);
+
+        if ($dog === null) {
+            $lowPopulatedDogId = $this->fleaRepository->findOneDogIdWithLowPopulation();
+            $dog = $this->registry->getRepository(Dog::class)->find($lowPopulatedDogId);
+        }
+
+        return $dog;
     }
 }

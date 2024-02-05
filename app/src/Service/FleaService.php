@@ -28,15 +28,7 @@ class FleaService
      */
     public function getPopulatedDogIds(): array
     {
-        $dogIds = [];
-        $fleas = $this->fleaRepository->findHomed();
-
-        /** @var Flea $flea */
-        foreach ($fleas as $flea) {
-            $dogIds[$flea->getDog()->getId()] = $flea->getDog()->getId();
-        }
-
-        return $dogIds;
+        return $this->fleaRepository->findPopulatedDogIds();
     }
 
     /**
