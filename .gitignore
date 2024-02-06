@@ -11,3 +11,8 @@
 /app/vendor/
 /mysql_data/
 /app/var/
+
+###> my stuff ###
+/.idea
+/app/.env.*.local
+###< my stuff ###
