@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Flea;
+use App\Repository\FleaRepository;
 use App\Service\DogService;
 use App\Service\FleaService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,13 +19,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FleaController extends AbstractController
 {
+    private FleaRepository $repository;
+
+    public function __construct(FleaRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * @Route("/flea", name="app_flea")
      * @Template
      */
-    public function index(ManagerRegistry $registry): array
+    public function index(): array
     {
-        $fleas = $registry->getRepository(Flea::class)->findBy([
+        $fleas = $this->repository->findBy([
             'dog' => null,
             'removed' => false,
         ]);
@@ -37,14 +45,9 @@ class FleaController extends AbstractController
     /**
      * @Route("/flea/bite/{id}", name="app_flea_bite", requirements={"id"="\d+"})
      */
-    public function bite(
-        int $id,
-        ManagerRegistry $registry,
-        EntityManagerInterface $entityManager,
-        DogService $dogService,
-        TranslatorInterface $translator,
-    ): RedirectResponse {
-        $flea = $registry->getRepository(Flea::class)->find($id);
+    public function bite(int $id, DogService $dogService, TranslatorInterface $translator): RedirectResponse
+    {
+        $flea = $this->repository->find($id);
 
         if ($flea === null) {
             throw new InvalidArgumentException($id . ' was not found!');
@@ -52,9 +55,7 @@ class FleaController extends AbstractController
 
         $availableDog = $dogService->getAvailableDog();
         $flea->setDog($availableDog);
-
-        $entityManager->persist($flea);
-        $entityManager->flush();
+        $this->repository->save($flea, true);
 
         $this->addFlash('notice', 'Flea ' . $flea->getId() . ' lives in Dog '. $availableDog->getId());
 

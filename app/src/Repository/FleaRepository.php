@@ -26,6 +26,15 @@ class FleaRepository extends ServiceEntityRepository
         parent::__construct($registry, Flea::class);
     }
 
+    public function save(Flea $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     /**
      * @return array
      */

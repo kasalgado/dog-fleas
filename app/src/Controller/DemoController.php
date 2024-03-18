@@ -17,7 +17,7 @@ class DemoController extends AbstractController
     public function index(): array
     {
         return [
-
+            // Nothing to do now
         ];
     }
 }
